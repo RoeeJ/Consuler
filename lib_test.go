@@ -1,55 +1,86 @@
-package main
+package morpheus
 
-import "testing"
-import "github.com/houqp/gtest"
+import (
+	"github.com/rs/zerolog/log"
+	"testing"
+	"time"
+)
 
-type ConsulTests struct{}
+var m Morpheus = Init()
 
-var ci *ConsulInstance
-
-func (s *ConsulTests) Setup(t *testing.T) {
-	initializeLogger()
-	if ci != nil {
-		t.Fatal("consul already initialized")
-	}
-	_ci, err := NewInstance("test", "localhost:8500", 8500, "http")
-	if err != nil {
-		t.Fatal(err)
-	}
-	ci = _ci
-	if err != nil {
-		t.Fatal(err)
-	}
+func Setup() {
+	m.FlushDB()
 }
-func (s *ConsulTests) Teardown(t *testing.T) {
-	if ci == nil {
-		t.Fatal("consul not initialized")
+func Teardown() {
+	svcs := m.ListServices()
+
+	for _, svc := range svcs {
+		m.DeleteService(svc)
 	}
-	ci = nil
+
 }
 
-// BeforeEach and AfterEach are invoked per test run
-func (s *ConsulTests) BeforeEach(t *testing.T) {}
-func (s *ConsulTests) AfterEach(t *testing.T)  {}
-
-func TestConsul(t *testing.T) {
-	gtest.RunSubTests(t, &ConsulTests{})
+func TestMain(m *testing.M) {
+	InitLogger()
+	Setup()
+	m.Run()
+	Teardown()
 }
 
-func (s *ConsulTests) SubTestServiceReg(t *testing.T) {
-	svc, err := ci.NewService("test", "127.0.0.1", 8080)
-	if err != nil {
-		t.Fatal("failed to create service", err)
+func TestInit(t *testing.T) {
+	if m.client == nil {
+		t.Errorf("expected client to be initialized")
 	}
-	err = ci.UpdateService(svc)
-	if err != nil {
-		t.Fatal("failed to update service", err)
-	}
-	t.Logf("%+v", svc)
 }
-func (s *ConsulTests) SubTestServiceInvalidReg(t *testing.T) {
-	_, err := ci.NewService("test", "", 0)
-	if err == nil {
-		t.Fatal("Invalid service registration should fail")
+
+func TestMorpheus_Connect(t *testing.T) {
+	if m.client == nil {
+		t.Errorf("expected client to be initialized")
+	}
+	if err := m.Connect(); err != nil {
+		t.Errorf("expected no error, got %s", err)
+	}
+}
+
+func TestMorpheus_RegisterService(t *testing.T) {
+	outch := make(chan bool)
+	name := "test"
+	port := 0
+	routes := []string{"/test"}
+	svc, err := m.RegisterService(name, port, routes, func(msg *Message) {
+		log.Info().Interface("msg", msg).Msg("received message")
+		close(outch)
+	})
+	m.Message(svc.Key(),
+		Message{
+			Timestamp: time.Now().Unix(),
+			From:      "client:/",
+			To:        svc.Key(),
+			Payload:   "Testing",
+			Route:     "/test",
+		})
+	select {
+	case <-outch:
+		break
+	case <-time.After(5 * time.Second):
+		t.Errorf("expected message to be received")
+	}
+	if err != nil {
+		t.Errorf("expected no error, got %s", err)
+	}
+}
+
+func TestMorpheus_ListServices(t *testing.T) {
+	svcs := m.ListServices()
+	internal := m.internalListServices()
+	if len(svcs) != internal {
+		t.Errorf("expected %d service, got %d", internal, len(svcs))
+	}
+}
+func TestMorpheus_UpdateRoutes(t *testing.T) {
+	svcs := m.ListServices()
+	for _, svc := range svcs {
+		svc.Routes = []string{"/test"}
+		m.UpdateRoutes(&svc)
 	}
 }
