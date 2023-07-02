@@ -1,27 +1,31 @@
 package morpheus
 
 import (
+	"github.com/roeej/morpheus/logging"
 	"github.com/rs/zerolog/log"
 	"testing"
 	"time"
 )
 
-var m Morpheus = Init()
+var m, err = Init()
 
 func Setup() {
+	if err != nil {
+		panic(err)
+	}
 	m.FlushDB()
 }
 func Teardown() {
 	svcs := m.ListServices()
 
 	for _, svc := range svcs {
-		m.DeleteService(svc)
+		m.Services.Remove(svc)
 	}
 
 }
 
 func TestMain(m *testing.M) {
-	InitLogger()
+	logging.InitLogger()
 	Setup()
 	m.Run()
 	Teardown()
@@ -47,7 +51,7 @@ func TestMorpheus_RegisterService(t *testing.T) {
 	name := "test"
 	port := 0
 	routes := []string{"/test"}
-	svc, err := m.RegisterService(name, port, routes, func(msg *Message) {
+	svc, err := m.RegisterService(name, port, routes, func(morpheus *Morpheus, msg *Message) {
 		log.Info().Interface("msg", msg).Msg("received message")
 		close(outch)
 	})
@@ -80,7 +84,7 @@ func TestMorpheus_ListServices(t *testing.T) {
 func TestMorpheus_UpdateRoutes(t *testing.T) {
 	svcs := m.ListServices()
 	for _, svc := range svcs {
-		svc.Routes = []string{"/test"}
+		svc.Routes = map[string]bool{"/test": true}
 		m.UpdateRoutes(&svc)
 	}
 }
