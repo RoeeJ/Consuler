@@ -55,14 +55,13 @@ func TestMorpheus_RegisterService(t *testing.T) {
 		log.Info().Interface("msg", msg).Msg("received message")
 		close(outch)
 	})
-	m.Message(svc.Key(),
-		Message{
-			Timestamp: time.Now().Unix(),
-			From:      "client:/",
-			To:        svc.Key(),
-			Payload:   "Testing",
-			Route:     "/test",
-		})
+	m.Message(nil, svc.Key(), Message{
+		Timestamp: time.Now().Unix(),
+		From:      "client:/",
+		To:        svc.Key(),
+		Payload:   "Testing",
+		Route:     "/test",
+	})
 	select {
 	case <-outch:
 		break

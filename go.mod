@@ -3,6 +3,7 @@ module github.com/roeej/morpheus
 go 1.20
 
 require (
+	github.com/fufuok/favicon v0.0.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/uuid v1.3.0
 	github.com/madflojo/tasks v1.1.0

@@ -18,6 +18,6 @@ func main() {
 	}
 
 	logging.InitLogger()
-	r := router.NewRouter(8080, m)
+	r := router.New(8080, m)
 	r.Start()
 }
