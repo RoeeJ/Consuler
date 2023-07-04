@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/roeej/morpheus"
-	"github.com/roeej/morpheus/logging"
+	morpheus "github.com/roeej/morpheus/core"
+	"github.com/roeej/morpheus/core/logging"
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"

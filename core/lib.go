@@ -104,6 +104,7 @@ func (m *Morpheus) RegisterService(name string, port int, routes Routes) (*Servi
 				}
 			case <-svc.LivenessChannel:
 				log.Warn().Str("id", svc.Id).Msg("service liveness channel closed")
+				_ = sub.Close()
 				return
 			}
 		}
@@ -281,6 +282,7 @@ func (m *Morpheus) RPCWithTimeout(msg Message, timeout time.Duration) chan *Mess
 			}
 		}
 		cancel()
+		_ = sub.Close()
 	}()
 	return retch
 }
@@ -295,6 +297,7 @@ func (m *Morpheus) ReceiveMessage(ctx context.Context, channel string, timeout t
 			if err != nil {
 				log.Error().Msg("failed to receive message")
 				cancel()
+				_ = sub.Close()
 				return
 			}
 			var response Message
@@ -302,6 +305,7 @@ func (m *Morpheus) ReceiveMessage(ctx context.Context, channel string, timeout t
 			if err != nil {
 				log.Error().Err(err).Msg("failed to unmarshal response")
 				cancel()
+				_ = sub.Close()
 				return
 			}
 			retch <- &response
