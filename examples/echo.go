@@ -1,6 +1,3 @@
-//go:build echo
-// +build echo
-
 package main
 
 import (
