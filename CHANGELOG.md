@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.1 - 2023-07-04
+#### Style
+- Added example module - (1d9bc3b) - Roee Jukin
+
+- - -
+
 ## v0.1.0 - 2023-07-04
 #### Documentation
 - Added MIT license - (94ac426) - Roee Jukin
