@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.3 - 2023-07-04
+#### Bug Fixes
+- forgot to close redis subscriptions after use - (530ff31) - Roee Jukin
+#### Miscellaneous Chores
+- Fixed dockerfile - (072fa11) - Roee Jukin
+
+- - -
+
 ## v0.1.2 - 2023-07-04
 #### Tests
 - Fixed test imports - (3cacb54) - Roee Jukin
