@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.0.1 - 2023-07-04
+#### Features
+- Rudimentary support for RPC over redis - (825695a) - Roee Jukin
+#### Miscellaneous Chores
+- Added dockerfile for router - (7201660) - Roee Jukin
+- dropped github actions - (446e04f) - Roee Jukin
+- Speccing out, added tests - (0f5a480) - Roee Jukin
+#### Refactoring
+- Restructured public interface - (e69eae3) - Roee Jukin
+#### Style
+- Added cocogitto - (409a8a5) - Roee Jukin
+
+- - -
+
 ## v0.0.4 - 2023-07-04
 #### Style
 - Testing directory structure - (6e8ed46) - Roee Jukin
