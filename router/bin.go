@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/roeej/morpheus"
-	"github.com/roeej/morpheus/logging"
-	"github.com/roeej/morpheus/router"
-	"github.com/rs/zerolog/log"
 	"math/rand"
 	"time"
+
+	morpheus "github.com/roeej/morpheus/core"
+	"github.com/roeej/morpheus/core/logging"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
@@ -18,6 +18,6 @@ func main() {
 	}
 
 	logging.InitLogger()
-	r := router.New(8080, m)
+	r := New(9090, m)
 	r.Start()
 }

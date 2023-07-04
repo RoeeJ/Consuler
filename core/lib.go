@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/alicebob/miniredis/v2"
+	"github.com/madflojo/tasks"
+	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 	"math/rand"
 	"net"
 	"os"
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/madflojo/tasks"
-	"github.com/redis/go-redis/v9"
-	"github.com/rs/zerolog/log"
 )
 
 const DefaultTTL = 5 * time.Second
@@ -25,6 +25,7 @@ type Morpheus struct {
 	context   context.Context
 	Services  Services // map[service_name]map[service_id]*Service
 	Scheduler *tasks.Scheduler
+	Options   Options
 }
 
 type MessageHandler func(m *Morpheus, msg *Message)
@@ -45,14 +46,23 @@ func (m *Morpheus) Connect() error {
 			password = pw
 		}
 	}
-
-	m.client = redis.NewClient(&redis.Options{
-		Addr:       host,
-		ClientName: clientName,
-		Username:   username,
-		Password:   password,
-		DB:         0,
-	})
+	if m.Options.Mock {
+		mr, err := miniredis.Run()
+		if err != nil {
+			return fmt.Errorf("failed to create miniredis instance: %s", err)
+		}
+		m.client = redis.NewClient(&redis.Options{
+			Addr: mr.Addr(),
+		})
+	} else {
+		m.client = redis.NewClient(&redis.Options{
+			Addr:       host,
+			ClientName: clientName,
+			Username:   username,
+			Password:   password,
+			DB:         0,
+		})
+	}
 	if m.context == nil {
 		m.context = context.Background()
 	}
@@ -259,14 +269,16 @@ func (m *Morpheus) RPCWithTimeout(msg Message, timeout time.Duration) chan *Mess
 	go func() {
 		sub := m.client.Subscribe(ctx, msg.ResponseChannel)
 		m.Send(ctx, msg)
-		receiveMessage, err := sub.ReceiveMessage(ctx)
-		log.Info().Interface("msg", receiveMessage).Msg("received message")
-		if err != nil {
-			log.Error().Err(err).Msg("failed to receive message")
+		select {
+		case <-ctx.Done():
 			close(retch)
-		} else {
-			response := FromRedisMessage(receiveMessage)
-			retch <- &response
+		case receiveMessage := <-sub.Channel():
+			if receiveMessage == nil {
+				close(retch)
+			} else {
+				response := FromRedisMessage(receiveMessage)
+				retch <- &response
+			}
 		}
 		cancel()
 	}()
@@ -354,10 +366,10 @@ func (m *Morpheus) FetchService(name string, id string) (Service, error) {
 	return svc, nil
 }
 
-func (m *Morpheus) ResolveService(path string) (*Service, error) {
+func (m *Morpheus) ResolveService(name, path string) (*Service, error) {
 	out := make([]Service, 0)
 	for _, svc := range m.ListServices() {
-		if svc.Match(path) {
+		if svc.Routes.Match(path) && svc.Name == name {
 			out = append(out, svc)
 		}
 	}
@@ -387,10 +399,19 @@ func getServiceName(key string) string {
 	return parts[2]
 }
 
-func Init() (*Morpheus, error) {
+type Options struct {
+	Mock bool `json:"mock"` // if true, will not connect to redis
+}
+
+func Init(opts ...Options) (*Morpheus, error) {
+	var options Options
+	if len(opts) > 0 {
+		options = opts[0]
+	}
 	m := Morpheus{
 		Services:  make(Services),
 		Scheduler: tasks.New(),
+		Options:   options,
 	}
 	err := m.Connect()
 	if err != nil {

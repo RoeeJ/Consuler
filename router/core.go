@@ -1,14 +1,16 @@
-package router
+package main
 
 import (
 	"fmt"
-	"github.com/fufuok/favicon"
-	"github.com/gin-gonic/gin"
-	"github.com/roeej/morpheus"
-	"github.com/rs/zerolog/log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/fufuok/favicon"
+	"github.com/gin-gonic/gin"
+	morpheus "github.com/roeej/morpheus/core"
+	"github.com/rs/zerolog/log"
 )
 
 type Router struct {
@@ -42,7 +44,9 @@ func (r *Router) Start() {
 
 func HandleRPC(r *Router) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
-		reqpath := c.Param("svc")
+		svcParam := strings.Split(strings.TrimLeft(c.Param("svc"), "/"), "/")
+		svcName := svcParam[0]
+		reqpath := fmt.Sprintf("/%s", strings.Join(svcParam[1:], "/"))
 		timeoutQ := c.DefaultQuery("timeout", "1")
 		timeoutP, err := strconv.ParseFloat(timeoutQ, 64)
 		if err != nil {
@@ -50,7 +54,7 @@ func HandleRPC(r *Router) gin.HandlerFunc {
 			return
 		}
 		timeout := time.Duration(timeoutP * float64(time.Second))
-		svc, err := r.Morpheus.ResolveService(reqpath)
+		svc, err := r.Morpheus.ResolveService(svcName, reqpath)
 		if err != nil {
 			_ = c.AbortWithError(http.StatusNotFound, err)
 			return
@@ -65,7 +69,15 @@ func HandleRPC(r *Router) gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusGatewayTimeout)
 			return
 		} else {
-			c.JSON(http.StatusOK, msg)
+			for k, v := range msg.Meta {
+				c.Header(k, v)
+			}
+			payloadText, ok := msg.Payload.(string)
+			if ok {
+				c.String(http.StatusOK, payloadText)
+				return
+			}
+			c.JSON(http.StatusOK, msg.Payload)
 		}
 	}
 	return fn

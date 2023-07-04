@@ -1,3 +1,6 @@
+//go:build echo
+// +build echo
+
 package main
 
 import (
@@ -20,7 +23,7 @@ func main() {
 	}
 	_, err = m.RegisterService("echo", 0, morpheus.Routes{
 		morpheus.Route{
-			Route:   "/echo",
+			Route:   "/",
 			Handler: HandleMessage,
 		},
 	})

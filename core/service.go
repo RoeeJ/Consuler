@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"strings"
 )
 
@@ -30,6 +31,16 @@ type Routes []Route
 
 func (s Routes) Len() int {
 	return len(s)
+}
+
+func (s Routes) Match(path string) bool {
+	for _, route := range s {
+		if path == route.Route {
+			log.Info().Str("path", path).Str("route", route.Route).Msg("matched route")
+			return true
+		}
+	}
+	return false
 }
 
 type Route struct {
