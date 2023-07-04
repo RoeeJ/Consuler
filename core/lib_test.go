@@ -1,7 +1,7 @@
 package morpheus
 
 import (
-	"github.com/roeej/morpheus/logging"
+	"github.com/roeej/morpheus/core/logging"
 	"testing"
 )
 
