@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/fufuok/favicon"
 	"github.com/gin-gonic/gin"
+	"github.com/nats-io/nats.go"
 	morpheus "github.com/roeej/morpheus/core"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"strings"
 )
 
 type Router struct {
@@ -41,8 +43,15 @@ func (r *Router) Start() {
 
 func HandleRPC(r *Router) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
-		//svcParam := strings.Split(strings.TrimLeft(c.Param("svc"), "/"), "/")
-		//svcName := svcParam[0]
+		svcParam := strings.Split(strings.TrimLeft(c.Param("svc"), "/"), "/")
+		svcName := svcParam[0]
+		reqPath := []byte(strings.Join(svcParam[1:], "/"))
+		resp, err := r.Morpheus.RPC(svcName, reqPath, nats.Header(c.Request.Header))
+		if err != nil {
+			_ = c.AbortWithError(http.StatusNotFound, err)
+			return
+		}
+		c.String(http.StatusOK, string(resp.Data))
 		//reqpath := fmt.Sprintf("/%s", strings.Join(svcParam[1:], "/"))
 		//timeoutQ := c.DefaultQuery("timeout", "1")
 		//timeoutP, err := strconv.ParseFloat(timeoutQ, 64)

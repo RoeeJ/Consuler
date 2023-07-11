@@ -138,6 +138,16 @@ func (m *Morpheus) ListServices() *[]micro.Info {
 	return <-resch
 }
 
+func (m *Morpheus) RPC(name string, data []byte, headers nats.Header) (*nats.Msg, error) {
+	subject := fmt.Sprintf("morpheus.service.%s", name)
+	msg := &nats.Msg{
+		Subject: subject,
+		Data:    data,
+		Header:  headers,
+	}
+	return m.client.RequestMsg(msg, 100*time.Millisecond)
+}
+
 func getServiceName(key string) string {
 	parts := strings.Split(key, ":")
 	return parts[2]
