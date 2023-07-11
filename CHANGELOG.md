@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.4 - 2023-07-11
+#### Refactoring
+- Testing NATS based RPC - (e3c352f) - Roee Jukin
+
+- - -
+
 ## v0.1.3 - 2023-07-04
 #### Bug Fixes
 - forgot to close redis subscriptions after use - (530ff31) - Roee Jukin
