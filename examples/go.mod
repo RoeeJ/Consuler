@@ -3,7 +3,7 @@ module github.com/roeej/morpheus/examples
 go 1.20
 
 require (
-	github.com/roeej/morpheus v0.1.2
+	github.com/roeej/morpheus v0.1.3
 	github.com/rs/zerolog v1.29.1
 )
 

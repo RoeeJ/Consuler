@@ -27,6 +27,8 @@ github.com/redis/go-redis/v9 v9.0.5 h1:CuQcn5HIEeK7BgElubPP8CGtE0KakrnbBSTLjathl
 github.com/redis/go-redis/v9 v9.0.5/go.mod h1:WqMKv5vnQbRuZstUwxQI195wHy+t4PuXDOjzMvcuQHk=
 github.com/roeej/morpheus v0.1.2 h1:VWQFLPVBDQ+a9OsadymrkDrplVEOTsIoGQ8WtqonrJE=
 github.com/roeej/morpheus v0.1.2/go.mod h1:5oebgBrEBSer8wCsRZdtEoImEJg88HGXKdKcxzbDXUw=
+github.com/roeej/morpheus v0.1.3 h1:7DuDIbCl7rIR6joRGVz8k+UAhidSgFR/9CbxAuxag44=
+github.com/roeej/morpheus v0.1.3/go.mod h1:5oebgBrEBSer8wCsRZdtEoImEJg88HGXKdKcxzbDXUw=
 github.com/rs/xid v1.4.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=
 github.com/rs/xid v1.5.0 h1:mKX4bl4iPYJtEIxp6CYiUuLQ/8DYMoz0PUdtGgMFRVc=
 github.com/rs/xid v1.5.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=

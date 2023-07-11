@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/nats-io/nats.go/micro"
 	"math/rand"
 	"time"
 
@@ -18,6 +19,19 @@ func main() {
 	}
 
 	logging.InitLogger()
+	routerSvc := morpheus.Service{
+		Name:        "router",
+		Description: "Morpheus Router",
+		Handler: func(request micro.Request) {
+			log.Info().Msg("got request")
+			_ = request.RespondJSON(map[string]string{"hello": "world"})
+		},
+	}
+	_, err = m.RegisterService(&routerSvc)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to register service")
+		return
+	}
 	r := New(9090, m)
 	r.Start()
 }

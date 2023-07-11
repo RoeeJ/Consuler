@@ -2,8 +2,11 @@
   <configuration default="false" name="Run Morpheus" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="morpheus" />
     <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="NATS_HOST" value="nats://172.20.10.4:4222" />
+    </envs>
     <kind value="PACKAGE" />
-    <package value="github.com/roeej/morpheus/v2" />
+    <package value="github.com/roeej/morpheus/router" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
     <method v="2" />
