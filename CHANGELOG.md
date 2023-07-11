@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.6 - 2023-07-11
+#### Miscellaneous Chores
+- Send response metadata as headers for router - (5cb0807) - Roee Jukin
+
+- - -
+
 ## v0.1.5 - 2023-07-11
 #### Miscellaneous Chores
 - Reintroduced RPC function - (e52dee3) - Roee Jukin
