@@ -10,7 +10,6 @@ import (
 	"github.com/nats-io/nats.go/micro"
 	"github.com/rs/zerolog/log"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -147,10 +146,13 @@ func (m *Morpheus) RPC(name string, data []byte, headers nats.Header) (*nats.Msg
 	}
 	return m.client.RequestMsg(msg, 100*time.Millisecond)
 }
-
-func getServiceName(key string) string {
-	parts := strings.Split(key, ":")
-	return parts[2]
+func (m *Morpheus) Publish(subject string, data []byte, headers nats.Header) error {
+	msg := &nats.Msg{
+		Subject: subject,
+		Data:    data,
+		Header:  headers,
+	}
+	return m.client.PublishMsg(msg)
 }
 
 type Options struct {
