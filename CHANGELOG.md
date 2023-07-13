@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.7 - 2023-07-13
+#### Miscellaneous Chores
+- Added a publish function - (bca4d23) - Roee Jukin
+
+- - -
+
 ## v0.1.6 - 2023-07-11
 #### Miscellaneous Chores
 - Send response metadata as headers for router - (5cb0807) - Roee Jukin
