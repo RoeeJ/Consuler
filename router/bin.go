@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/nats-io/nats.go/micro"
+	"github.com/roeej/morpheus/core/message"
 	"math/rand"
 	"time"
 
@@ -23,8 +24,12 @@ func main() {
 		Name:        "router",
 		Description: "Morpheus Router",
 		Handler: func(request micro.Request) {
-			log.Info().Msg("got request")
-			_ = request.RespondJSON(map[string]string{"hello": "world"})
+			msg, err := message.FromNatsRequest(request)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to parse message")
+				return
+			}
+			_ = request.Respond(msg.JSON(), micro.WithHeaders(msg.Meta))
 		},
 	}
 	_, err = m.RegisterService(&routerSvc)

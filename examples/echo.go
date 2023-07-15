@@ -4,6 +4,7 @@ import (
 	"github.com/nats-io/nats.go/micro"
 	morpheus "github.com/roeej/morpheus/core"
 	"github.com/roeej/morpheus/core/logging"
+	"github.com/roeej/morpheus/core/message"
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
@@ -22,6 +23,7 @@ func main() {
 		Name:        "echo",
 		Description: "Morpheus Echo Service",
 		Handler: func(request micro.Request) {
+			msg, err := message.FromNatsRequest(request)
 			log.Info().Interface("request", request.Headers()).Msg("got request")
 			_ = request.Respond(request.Data(), micro.WithHeaders(request.Headers()))
 		},

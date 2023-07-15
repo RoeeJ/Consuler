@@ -21,6 +21,7 @@ func (s Services) Remove(svc Service) {
 	}
 	delete(s, svc.Name)
 } // map[service_name]map[service_id]*Service
+
 type Service struct {
 	Name          string               `json:"name,omitempty"`
 	Subscriptions []*nats.Subscription `json:"-"`

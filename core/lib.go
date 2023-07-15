@@ -25,8 +25,6 @@ type Morpheus struct {
 	Options   Options
 }
 
-type MessageHandler func(m *Morpheus, msg *Message)
-
 func (m *Morpheus) Connect() error {
 	host, ok := os.LookupEnv("NATS_HOST")
 	if !ok {
@@ -62,12 +60,13 @@ func (m *Morpheus) RegisterService(svc *Service) (*Service, error) {
 	if m.serviceExists(svc.Name) {
 		return nil, fmt.Errorf("service already exists")
 	}
+	meta := make(map[string]string)
 	service, err := micro.AddService(m.client, micro.Config{
 		Name: svc.Name,
 		Endpoint: &micro.EndpointConfig{
 			Subject:  svc.Key(),
 			Handler:  svc.Handler,
-			Metadata: nil,
+			Metadata: meta,
 		},
 		Version:     "0.0.1",
 		Description: svc.Description,
