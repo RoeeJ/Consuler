@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.9 - 2023-07-15
+#### Miscellaneous Chores
+- Added metadata headers generation - (1fdc19f) - Roee Jukin
+
+- - -
+
 ## v0.1.7 - 2023-07-13
 #### Miscellaneous Chores
 - Added a publish function - (bca4d23) - Roee Jukin
