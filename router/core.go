@@ -28,13 +28,14 @@ func (r *Router) Start() {
 	_ = g.SetTrustedProxies(nil)
 	g.Use(favicon.New())
 	g.GET("/health", func(c *gin.Context) {
-		c.AbortWithStatus(http.StatusOK)
+		c.Status(http.StatusOK)
 	})
 	g.GET("/services", func(c *gin.Context) {
 		svcs := r.Morpheus.ListServices()
 		c.JSONP(http.StatusOK, svcs)
 	})
 	g.GET("/rpc/*svc", HandleRPC(r))
+	g.POST("/rpc/*svc", HandleRPC(r))
 	err := g.Run(fmt.Sprintf(":%d", r.Port))
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to start router")
@@ -43,6 +44,7 @@ func (r *Router) Start() {
 
 func HandleRPC(r *Router) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
+		log.Info().Interface("body", c.Request.Form).Msg("request body")
 		svcParam := strings.Split(strings.TrimLeft(c.Param("svc"), "/"), "/")
 		svcName := svcParam[0]
 		reqPath := []byte(strings.Join(svcParam[1:], "/"))

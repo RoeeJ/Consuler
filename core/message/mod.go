@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/micro"
+	"strconv"
 )
 
 type Message struct {
@@ -52,4 +53,16 @@ func (m *Message) JSON() []byte {
 		return nil
 	}
 	return data
+}
+
+func (m *Message) Metadataheaders() map[string][]string {
+	headers := make(map[string][]string)
+	headers["timestamp"] = []string{strconv.FormatInt(m.Timestamp, 10)}
+	headers["msg_id"] = []string{m.MsgId}
+	headers["response_channel"] = []string{m.ResponseChannel}
+	headers["channel"] = []string{m.Channel}
+	headers["route"] = []string{m.Route}
+	headers["from"] = []string{m.From}
+	headers["to"] = []string{m.To}
+	return headers
 }
