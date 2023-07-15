@@ -24,8 +24,11 @@ func main() {
 		Description: "Morpheus Echo Service",
 		Handler: func(request micro.Request) {
 			msg, err := message.FromNatsRequest(request)
-			log.Info().Interface("request", request.Headers()).Msg("got request")
-			_ = request.Respond(request.Data(), micro.WithHeaders(request.Headers()))
+			if err != nil {
+				_ = request.Error(err.Error(), "failed to parse message", nil)
+				return
+			}
+			_ = request.Respond(msg.JSON(), micro.WithHeaders(msg.Meta), micro.WithHeaders(msg.tracingHeaders()))
 		},
 	}
 	_, err = m.RegisterService(&svc)
